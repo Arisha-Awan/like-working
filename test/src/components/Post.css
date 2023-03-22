@@ -1,0 +1,29 @@
+.post-main-container{
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.single-post-container{
+    width: 100%;
+    height: 500px;
+}
+
+.image-container{
+    width: 100%;
+    height: 80%;
+}
+
+.image-list{
+    height: 100%;
+    width: 100%;    
+}
+
+.account-name{
+    font-weight: 600;
+}
+
+.description-text{
+    font-weight: 400;
+}
