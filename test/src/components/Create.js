@@ -20,17 +20,6 @@ const Create = ()=>{
         descriptionBox: ""
     });
 
-    
-    //to read file into an arrayBuffer called in retrieveFile function
-    // const settingFile = (image)=>{
-    //     let reader = new FileReader();
-    //     reader.readAsArrayBuffer(image);
-    //     reader.onload = function() {
-    //         setFile(image);
-    //     };
-    // };
-
-    // const [file, setFile] = useState(null);
     const retrieveFile = (e)=>{
         const image = e.target.files[0]; //files array of files object
 
@@ -38,16 +27,12 @@ const Create = ()=>{
         let imgPrevCont = document.getElementById('img-preview-container');
         
         let reader = new FileReader();
-        // reader.readAsArrayBuffer(image);
         reader.readAsArrayBuffer(image);
         reader.onload = function(e) {
             imgPrev.src = e.target.result;
             setFile(image);
         };
         // reader.readAsDataURL(image);
-        // reader.readAsArrayBuffer(image);
-        // settingFile(image);
-        // imgPrev.src = e.target.result;
         imgPrevCont.style.display = 'flex';
         imgPrevCont.style.justifyContent = 'center';
         imgPrevCont.style.alignItems = 'center';
@@ -103,19 +88,7 @@ const Create = ()=>{
             console.log("My image hash : ", ImgHash);
 
             const signer = contract.connect(provider.getSigner());
-            signer.addPostImage(ImgHash);
-
-            // function myloop() {
-            //   console.log("my functionnnnnnnnn");
-            //   console.log("my arayyyyy length", post_array.length);
-            //   for (let i = 0; i < post_array.length; i++) {
-            //     console.log("My BHOngiiiii", post_array[i]);
-            //   }
-            // }
-            // myloop();
-
-            // post_array = post_array.toString();
-            // post_array = post_array.split(",");
+            signer.addPostImage(ImgHash, caption.descriptionBox, imageText.textOnImage);
         } catch (e) {
             alert("Unable to upload image to Pinata");
         }

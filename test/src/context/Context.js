@@ -29,11 +29,12 @@ export const InscribleProvider=({children})=>{
     const [isContract, setIsContract] = useState(false);
 
     // const [isConnected, setisConnected] = useState(false)
-    // const [isLoading, setisLoading] = useState(false);
+    const [isLoading, setisLoading] = useState(false);
 
 
     //function to get images from blockchain
     // const getAllImages = async(c) =>{
+    //   console.log("Inside the getAllImages function");
     //     setisLoading(true);
     // //     const arr = [image0, image1, image2, image3, image4, image4, image5];        
     // //    const images =await arr.map((item, i) => {
@@ -102,7 +103,7 @@ export const InscribleProvider=({children})=>{
     //     });
     //     setpostsArr(images); 
     //     setisLoading(false);         
-    // }
+    // };
 
     const CreateContract = async (prov) => {
         setIsContract(false);
@@ -121,7 +122,7 @@ export const InscribleProvider=({children})=>{
           const address = await signer.getAddress();
           setAccount(address);
           console.log("Currently signed in user in metamask : ", address);
-          let contractAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+          let contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
   
           console.log("Checking ABI object : ", Signup_signin.abi);
           const contract = new ethers.Contract(
@@ -138,7 +139,7 @@ export const InscribleProvider=({children})=>{
           setErrorTitle("Fatal Error");
           setErrorMessage("Metamask Extension is not installed!!");
         }
-
+        // getAllImages(contract);
         setIsContract(true);
     };
 
@@ -150,7 +151,7 @@ export const InscribleProvider=({children})=>{
 
     return(
         <InscribleContext.Provider value={{
-        // isLoading,
+        isLoading,
         isContract,
         postsArr,
         contract,

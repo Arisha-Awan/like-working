@@ -5,8 +5,7 @@ import "hardhat/console.sol";
 contract Signup_signin {
     //mapping of User to email
     // mapping(address => User) public users;
-    mapping(address=>string[]) Images_List;
-    address [] userAddresses;
+    
 
     //  mapping(address=>string[]) Description_List;
 
@@ -21,12 +20,20 @@ contract Signup_signin {
     // }
 
     uint public imageCount=0;
-    //Post Struct 
+    struct Post{
+        address user;
+        string imageHash;
+        string description;
+        string imageText;
+    } 
+    mapping(address=>Post[]) Images_List;
+    address [] userAddresses;
+    
     
 
     
 
-    function addPostImage(string memory _imgHash) public 
+    function addPostImage(string memory _imgHash, string memory desc, string memory imgText) public 
     {   
         // Make sure the image hash exists
         require(bytes(_imgHash).length > 0);
@@ -40,7 +47,15 @@ contract Signup_signin {
     
         // Post_List[msg.sender].push(Post(_imgHash,_description,0));
         // count=count+1;
-        Images_List[msg.sender].push(_imgHash);
+
+        Post memory newPost = Post({
+            user: msg.sender,
+            imageHash: _imgHash,
+            description: desc,
+            imageText: imgText
+        });
+
+        Images_List[msg.sender].push(newPost);
         imageCount++;
         bool isOldAddress = isAddressPresent(userAddresses, msg.sender);
         if(isOldAddress == false){
@@ -57,11 +72,11 @@ contract Signup_signin {
         return false;
     }
 
-    function getAllPosts() external view returns (string[] memory) {
-        string[] memory allPosts = new string[](imageCount);
+    function getAllPosts() external view returns (Post[] memory) {
+        Post[] memory allPosts = new Post[](imageCount);
         uint currentIndex = 0;
         for (uint i = 0; i < userAddresses.length; i++) {
-            string[] memory userPosts = Images_List[userAddresses[i]];
+            Post[] memory userPosts = Images_List[userAddresses[i]];
             for (uint j = 0; j < userPosts.length; j++) {
                 allPosts[currentIndex] = userPosts[j];
                 currentIndex++;

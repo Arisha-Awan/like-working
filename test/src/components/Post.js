@@ -7,6 +7,8 @@ import {InscribleContext} from '../context/Context';
 
 const Post = () => {
 
+    // const {isLoading, postsArr} = useContext(InscribleContext);
+
     const {contract, account, isContract} = useContext(InscribleContext);
     const [postsArr,setpostsArr] = useState([]);
     const [isLoading, setisLoading] = useState(false);
@@ -49,38 +51,45 @@ const Post = () => {
         // dataArray = await contract.display(account);
 
         dataArray =  await contract.getAllPosts();
-        // console.log("arrayyyy", dataArray);
-        // console.log("typeeeee of varrrr", dataArray);
-        } catch (e) {
-        //alert("You don't have access");
-        }
+        console.log(dataArray);
+        // // console.log("arrayyyy", dataArray);
+        // // console.log("typeeeee of varrrr", dataArray);
+        // } catch (e) {
+        // //alert("You don't have access");
+        // }
 
-        const str = await dataArray.toString();
-        const str_array = str.split(",");
-        console.log(str);
-        // console.log(str_array);
-        const images = str_array.map((item, i) => {
+        // const str = await dataArray.toString();
+        // const str_array = str.split(",");
+        // console.log(str);
+        // // console.log(str_array);
+        const images = dataArray.map((item, i) => {
         return (
             <div className="single-post-container">
-            <span className="account-name">USER ADDRESS:{account}</span>
+            <span className="account-name">USER ADDRESS:{item[0]}</span>
             <div className="image-container">
                 <img
                 key={i}
-                src={`https://gateway.pinata.cloud/ipfs/${item.substring(6)}`}
+                src={`https://gateway.pinata.cloud/ipfs/${item[1].substring(6)}`}
                 alt="new"
                 className="image-list"
                 ></img>
+                <div className="img-text-container">
+                    <span className="img-text" id="img-text">{item[3]}</span>
+                </div>
             </div>
-            {/* <div className="discription">
-                <span className="discription-text">this is post discription</span>
-            </div> */}
+            <div className="discription">
+                <span className="discription-text">{item[2]}</span>
+            </div>
             <hr />
             </div>
         );
         });
         setpostsArr(images); 
-        setisLoading(false);         
-    }
+        setisLoading(false);   
+        }catch(e){
+            alert("You don't have access")
+        }      
+    };
 
     useEffect(()=>{
         getAllImages(contract);
@@ -92,6 +101,7 @@ const Post = () => {
             <div className="container post-main-container">
                 {!isLoading ? 
                     postsArr
+                    // <span>testing</span>
                     : <Loader/>}
             </div>
         </>
