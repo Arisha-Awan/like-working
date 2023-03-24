@@ -1,16 +1,11 @@
 import React, {useContext, useEffect} from 'react';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 import { ethers } from 'ethers';
-import './App.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import '../node_modules/bootstrap/dist/js/bootstrap.min.js'
-import Registration from './components/Registration';
-import Home from './components/Home';
-import Login from './components/Login';
-import Post from './components/Post';
-import Create from './components/Create';
+import {  Post, Create, Registration, Login } from './components';
 import { Route, Routes } from 'react-router-dom';
 import {InscribleContext} from './context/Context';
-
+import './App.css';
 
 function App() {
 
@@ -19,7 +14,6 @@ function App() {
   useEffect(() => {
     const prov = new ethers.providers.Web3Provider(window.ethereum);
     CreateContract(prov);
-    // getAllImages(contract);
   },[]);
   return (
     <>

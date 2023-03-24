@@ -2,10 +2,14 @@
 .container{
     max-width: 700px;
     width: 100%;
-    background: #fff;
+    /* background: #fff; */
     padding: 25px 30px;
     border-radius: 5px;
     margin-top: 50px;
+  }
+
+  .reg-container{
+    background: white;
   }
   
   /* Registration title in .container div */

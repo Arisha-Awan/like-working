@@ -1,8 +1,8 @@
 import React from "react";
-import './Registration.css'
-import Navbar from "./Navbar";
+import {Navbar} from '../index';
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import './Registration.css'
 
 const Registration = (props) => {
 
@@ -28,7 +28,7 @@ const Registration = (props) => {
     return (
         <div className="register-container">
             <Navbar />
-            <div className="container">
+            <div className="container reg-container">
                 <div className="title">Registration</div>
                 <form action="" onSubmit={handleSubmit}>
                     <div className="user-details">

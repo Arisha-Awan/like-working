@@ -1,10 +1,9 @@
 import React from "react";
-import Sidebar from "./Sidebar";
-import './Create.css';
+import {Sidebar, Loader} from '../index';
 import { useState, useContext } from "react";
-import {InscribleContext} from '../context/Context'
-import Loader from "./Loader";
+import {InscribleContext} from '../../context/Context';
 import axios from "axios";
+import './Create.css';
 
 const Create = ()=>{
 

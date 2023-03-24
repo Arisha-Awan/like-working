@@ -1,8 +1,8 @@
 import React from "react";
-import './Login.css'
-import Navbar from "./Navbar";
+import {Navbar} from '../index';
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import './Login.css'
 
 const Login = () => {
 
@@ -24,7 +24,7 @@ const Login = () => {
     return (
         <>
             <Navbar />
-            <div className="container my-8">
+            <div className="container reg-container my-8">
                 <div className="title">Login</div>
                 <form action="" onSubmit={handleSubmit}>
                     <div className="user-details">

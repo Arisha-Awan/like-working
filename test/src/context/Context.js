@@ -1,17 +1,8 @@
-import React,{useState, useEffect} from 'react';
+import React,{useState} from 'react';
 import { ethers } from "ethers";
 import Signup_signin from "../artifacts/contracts/Signup_signin.sol/Signup_signin.json";
 
-
-// import image0 from "../Images/596296.jpeg";
-// import image1 from "../Images/681016.jpg";
-// import image2 from "../Images/976013.jpg";
-// import image3 from "../Images/987919.jpg";
-// import image4 from "../Images/mosque.jpg";
-// import image5 from "../Images/rain.jpg";
-
 export const InscribleContext=React.createContext();
-
 
 export const InscribleProvider=({children})=>{
 
@@ -33,77 +24,40 @@ export const InscribleProvider=({children})=>{
 
 
     //function to get images from blockchain
-    // const getAllImages = async(c) =>{
-    //   console.log("Inside the getAllImages function");
-    //     setisLoading(true);
-    // //     const arr = [image0, image1, image2, image3, image4, image4, image5];        
-    // //    const images =await arr.map((item, i) => {
-    // //             return (
-    // //                 <>
-    // //                     <div className="single-post-container" key={i}>
-    // //                         <span className="account-name">My Account</span>
-    // //                         <div className="image-container">
-    // //                                 <a href={item} key={i} >
-    // //                                 <img
-    // //                                     key={i}
-    // //                                     src={item}
-    // //                                     alt="new"
-    // //                                     className="image-list"
-    // //                                 ></img>
-    // //                             </a>
-    // //                         </div>
-    // //                         <span className="account-name" >My Account:
-    // //                             <span className="description-text">This is the discription of my image</span>
-    // //                         </span>
-    // //                     </div>
-    // //                     <hr />
-    // //                 </>
-    // //             );
-    // //         });
+    const getAllImages = async(contract) =>{
+      setisLoading(true);
 
-    // //         setTimeout(() => {
-    // //             setisLoading(false);
-    // //         }, 5000);
-
-    // //         setpostsArr(images);
-
-    //     let dataArray;
-    //     try {
-    //     // dataArray = await contract.display(account);
-
-    //     dataArray =  await c.getAllPosts();
-    //     // console.log("arrayyyy", dataArray);
-    //     // console.log("typeeeee of varrrr", dataArray);
-    //     } catch (e) {
-    //     //alert("You don't have access");
-    //     }
-
-    //     const str = await dataArray.toString();
-    //     const str_array = str.split(",");
-    //     console.log(str);
-    //     // console.log(str_array);
-    //     const images = str_array.map((item, i) => {
-    //     return (
-    //         <div className="single-post-container">
-    //         <span className="account-name">USER ADDRESS:{account}</span>
-    //         <div className="image-container">
-    //             <img
-    //             key={i}
-    //             src={`https://gateway.pinata.cloud/ipfs/${item.substring(6)}`}
-    //             alt="new"
-    //             className="post-image"
-    //             ></img>
-    //         </div>
-    //         {/* <div className="discription">
-    //             <span className="discription-text">this is post discription</span>
-    //         </div> */}
-    //         <hr />
-    //         </div>
-    //     );
-    //     });
-    //     setpostsArr(images); 
-    //     setisLoading(false);         
-    // };
+      let dataArray;
+      try {
+      dataArray =  await contract.getAllPosts();
+      const images = dataArray.map((item, i) => {
+      return (
+          <div className="single-post-container">
+          <span className="account-name">USER ADDRESS:{item[0]}</span>
+          <div className="image-container">
+              <img
+              key={i}
+              src={`https://gateway.pinata.cloud/ipfs/${item[1].substring(6)}`}
+              alt="new"
+              className="image-list"
+              ></img>
+              <div className="img-text-container">
+                  <span className="img-text" id="img-text">{item[3]}</span>
+              </div>
+          </div>
+          <div className="discription">
+              <span className="discription-text">{item[2]}</span>
+          </div>
+          <hr />
+          </div>
+      );
+      });
+      setpostsArr(images); 
+      setisLoading(false);   
+      }catch(e){
+          alert("You don't have access")
+      }      
+    };
 
     const CreateContract = async (prov) => {
         setIsContract(false);
@@ -139,15 +93,8 @@ export const InscribleProvider=({children})=>{
           setErrorTitle("Fatal Error");
           setErrorMessage("Metamask Extension is not installed!!");
         }
-        // getAllImages(contract);
         setIsContract(true);
     };
-
-    // useEffect(() => {
-    //     const prov = new ethers.providers.Web3Provider(window.ethereum);
-    //     CreateContract(prov);
-    //     // getAllImages(contract);
-    // },[]);
 
     return(
         <InscribleContext.Provider value={{
@@ -159,7 +106,8 @@ export const InscribleProvider=({children})=>{
         provider,
         errorMessage,
         errorTitle,
-        CreateContract}}>
+        CreateContract,
+        getAllImages}}>
             {children}
         </InscribleContext.Provider>
     );
