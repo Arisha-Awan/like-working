@@ -2,14 +2,11 @@ import React from "react";
 import {Sidebar, Loader} from '../index';
 import { useState, useContext } from "react";
 import {InscribleContext} from '../../context/Context';
-import axios from "axios";
 import './Create.css';
 
 const Create = ()=>{
 
-    const {contract, provider} = useContext(InscribleContext);
-    
-    const [isUploading, setIsUploading] = useState(false);
+    const {uploadData, isLoading} = useContext(InscribleContext);
     const [filename, setFilename] = useState("No file choosen!");
     const [file, setFile] = useState(null);
     const [imageText, setImageText] = useState({
@@ -19,26 +16,46 @@ const Create = ()=>{
         descriptionBox: ""
     });
 
+    //READING FILE THAT USER UPLOADED
     const retrieveFile = (e)=>{
         const image = e.target.files[0]; //files array of files object
 
-        let imgPrev = document.getElementById('img-preview');
-        let imgPrevCont = document.getElementById('img-preview-container');
+        // let imgPrev = document.getElementById('img-preview');
+        // let imgPrevCont = document.getElementById('img-preview-container');
         
         let reader = new FileReader();
         reader.readAsArrayBuffer(image);
         reader.onload = function(e) {
-            imgPrev.src = e.target.result;
+            // imgPrev.src = e.target.result;
             setFile(image);
         };
         // reader.readAsDataURL(image);
-        imgPrevCont.style.display = 'flex';
-        imgPrevCont.style.justifyContent = 'center';
-        imgPrevCont.style.alignItems = 'center';
+        // imgPrevCont.style.display = 'flex';
+        // imgPrevCont.style.justifyContent = 'center';
+        // imgPrevCont.style.alignItems = 'center';
         setFilename(image.name);
+        imagePreview(e);
         e.preventDefault();
     };
 
+    //TO SHOW IMAGE PREVIEW TO USER
+    const imagePreview = (e)=>{
+        const image = e.target.files[0]; //files array of files object
+
+        let imgPrev = document.getElementById('img-preview');
+        let imgPrevCont = document.getElementById('img-preview-container');
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            imgPrev.src = e.target.result;
+        };
+        reader.readAsDataURL(image);
+        imgPrevCont.style.display = 'flex';
+        imgPrevCont.style.justifyContent = 'center';
+        imgPrevCont.style.alignItems = 'center';
+    };
+
+    //SETTING TEXT ON IMAGE
     const displayTextOnImage =()=>{
         let division = document.getElementById("text-on-img-container");
         if (division.style.display === 'block') {
@@ -50,13 +67,13 @@ const Create = ()=>{
     };
 
 
-    //to set text on image------------------
+    //ADDING IMAGE TEXT(IF ANY) TO USESTATE
     const addToImage = (e)=>{
         const value = e.target.value;
         setImageText({...imageText, textOnImage : value});
     };
 
-
+    //ADDING POST CAPTION TO USESTATE
     const saveCaption = (e)=>{
         const value = e.target.value;
         setCaption({...caption, descriptionBox : value})
@@ -64,46 +81,24 @@ const Create = ()=>{
     }
 
 
-    //
+    //TO UPLOAD ALL THE DATA OF THE POST TO THE BLOCKCHAIN
     const saveData = async (e)=>{
-        setIsUploading(true);
         e.preventDefault();
         if (file) {
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            const resFile = await axios({
-            method: "post",
-            url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
-            data: formData,
-            headers: {
-                pinata_api_key: `9fb649761b35eaeed2fd`,
-                pinata_secret_api_key: `3bd0c4fcfd38a4594d59561d5600a4ac282de92caa00ff36b3f6b98b25a60227`,
-                "Content-Type": "multipart/form-data",
-            },
-            });
-            const ImgHash = `ipfs://${resFile.data.IpfsHash}`;
-            console.log("My image hash : ", ImgHash);
-
-            const signer = contract.connect(provider.getSigner());
-            signer.addPostImage(ImgHash, caption.descriptionBox, imageText.textOnImage);
-        } catch (e) {
-            alert("Unable to upload image to Pinata");
+            uploadData(file, imageText, caption);
+            setFile(null);
         }
-        } else {
-        setFilename("No image selected");
+        else{
+            setFilename("No image selected");
         }
-        alert("Successfully Image Uploaded");
-        setFile(null);
-        setIsUploading(false);
+        
     };
 
     return(
         <>
             <Sidebar />
             <div className="container new-post-container-main">
-                {isUploading ?
+                {isLoading ?
                     <Loader /> 
                     :
                     <>

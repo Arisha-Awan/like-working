@@ -1,20 +1,11 @@
-import React, {useContext, useEffect} from 'react';
+import React from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
-import { ethers } from 'ethers';
-import {  Post, Create, Registration, Login } from './components';
+import {  Post, Create, Registration, Login, Error } from './components';
 import { Route, Routes } from 'react-router-dom';
-import {InscribleContext} from './context/Context';
 import './App.css';
 
 function App() {
-
-  const {CreateContract} = useContext(InscribleContext);
-
-  useEffect(() => {
-    const prov = new ethers.providers.Web3Provider(window.ethereum);
-    CreateContract(prov);
-  },[]);
   return (
     <>
       <Routes>
@@ -23,6 +14,7 @@ function App() {
         <Route path='/Login' element={<Login/>}></Route>
         <Route path='/inscrible' element={<Post/>}></Route>
         <Route path='/new-post' element={<Create/>}></Route>
+        <Route path='/error' element={<Error/>}></Route>
       </Routes>
     </>
   );
