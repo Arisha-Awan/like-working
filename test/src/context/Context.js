@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CreateContract, MapDataToFrontend } from '../Utils/API';
-
+import { ConnectWithContract, ConnectWallet, MapDataToFrontend } from '../Utils/API';
 
 //CREATING CONTEXT
 export const InscribleContext = React.createContext();
@@ -11,22 +10,42 @@ export const InscribleContext = React.createContext();
 export const InscribleProvider = ({ children }) => {
 
   const [appData, setAppData] = useState([]);
+  const [account, setAccount] = useState("");
+  const [userList, setUserLists] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorTitle, setErrorTitle] = useState("");
   const [isLoading, setisLoading] = useState(false);
+  const [friendMsg, setFriendMsg] = useState([]);
+  const [error, setError] = useState("");
+  const [userName, setUserName] = useState("");
+  //CHAT USER DATA
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [currentUserAddress, setCurrentUserAddress] = useState("");
 
   //FUNCTION TO GET ALL THE POSTS FROM BLOCKCHAIN
   const fetchData = async () => {
     try {
       setisLoading(true);
 
-      //CREATING ISTANCE OF CONTRACT
-      const contract = await CreateContract();
+      //GET CONTRACT
+      const contract = await ConnectWithContract(); console.log("contract : ", contract);
 
-      //GETTING DATA BY CALLING SMART CONTRACT FUNCTION
-      const data = await contract.getAllPosts();
+      //GET ACCOUNT
+      const connectAccount = await ConnectWallet();
+      setAccount(connectAccount); console.log("Account : ", connectAccount);
 
+      //GETTING CURRENTLY LOGGED USERNAME
+      const userName = await contract.getUserName(connectAccount);
+      setUserName(userName);console.log(userName)
+
+      //GETTING ALL REGISTERED USERS
+      const userList = await contract.getAllAppUser(); console.log(userList)
+      setUserLists(userList); console.log("userlist")
+
+      //GETTING POST DATA
+      const data = await contract.getAllPosts(); console.log("data" , data)
       setAppData(MapDataToFrontend(data));
+      
       setisLoading(false);
     } catch (error) {
       setErrorTitle("NO Metamask Account FOUND");
@@ -41,7 +60,7 @@ export const InscribleProvider = ({ children }) => {
       setisLoading(true);
 
       //CREATING ISTANCE OF CONTRACT
-      const contract = await CreateContract();
+      const contract = await ConnectWithContract();
 
       //UPLOADING FILE TO PINATA
       const formData = new FormData();
@@ -60,15 +79,63 @@ export const InscribleProvider = ({ children }) => {
       const ImgHash = `ipfs://${resFile.data.IpfsHash}`;
 
       //ADDING DATA TO BLOCKCHAIN
-      await contract.addPostImage(ImgHash, caption.descriptionBox, imageText.textOnImage);
-      alert("Successfully Image Uploaded");
+      const add = await contract.addPostImage(ImgHash, caption.descriptionBox, imageText.textOnImage);
+      await add.wait();
       setisLoading(false);
     } catch (e) {
       alert("Couldn't upload image!");
       setErrorTitle("FAILED TRANSACTION");
-      setErrorMessage("Couldn't Perform Transaction. Please Check Your internet and Try Again!");
+      setError("Couldn't Perform Transaction. Please Check Your internet and Try Again!");
       setisLoading(false);
     }
+  };
+
+  //READ MESSAGE/GET ALL MESSAGES
+  const readMessage = async (friendAddress) => {
+    try {
+      const contract = await ConnectWithContract();
+      const read = await contract.readMessage(friendAddress);
+      setFriendMsg(read);
+    } catch (error) {
+      console.log("Currently You Have no Message");
+    }
+  };
+
+  //SEND MESSAGE TO YOUR FRIEND
+  const sendMessage = async ({ msg, address }) => {
+    try {
+      const contract = await ConnectWithContract();
+      const addMessage = await contract.sendMessage(address, msg);
+      setisLoading(true);
+      await addMessage.wait();
+      setisLoading(false);
+      window.location.reload();
+    } catch (error) {
+      setError("Please reload and try again");
+    }
+  };
+
+  //CREATE ACCOUNT
+  const createAccount = async (name) => {
+    try {
+      console.log("inside ca")
+      const contract = await ConnectWithContract(); console.log(contract)
+      const getCreatedUser = await contract.createAccount(name);console.log("calling")
+      setisLoading(true);
+      await getCreatedUser.wait(); console.log("called")
+      setisLoading(false);
+      window.location.reload(); console.log("donne")
+    } catch (error) {
+      setError("Error while creating your account Pleas reload browser");
+    }
+  };
+
+  //READ USER INFO
+  const readUser = async (userAddress) => {
+    const contract = await ConnectWithContract();
+    const userName = await contract.getUserName(userAddress);
+    setCurrentUserName(userName);
+    setCurrentUserAddress(userAddress);
   };
 
   // const CreateContract = async (prov) => {
@@ -109,16 +176,28 @@ export const InscribleProvider = ({ children }) => {
   // };
 
   useEffect(() => {
-    setAppData(fetchData());
+    fetchData();
   }, [])
 
   return (
     <InscribleContext.Provider value={{
       isLoading,
       appData,
+      account,
+      userList,
       errorTitle,
       errorMessage,
-      uploadData
+      friendMsg,
+      error,
+      userName,
+      currentUserAddress,
+      currentUserName,
+      uploadData,
+      createAccount,
+      readMessage,
+      sendMessage,
+      readUser,
+      // fetchPostss
     }}>
       {children}
     </InscribleContext.Provider>

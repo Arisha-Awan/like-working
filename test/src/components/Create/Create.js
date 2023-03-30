@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {Sidebar, Loader} from '../index';
 import { useState, useContext } from "react";
 import {InscribleContext} from '../../context/Context';
@@ -15,6 +16,8 @@ const Create = ()=>{
     const [caption, setCaption] = useState({
         descriptionBox: ""
     });
+
+    const navigate = useNavigate();
 
     //READING FILE THAT USER UPLOADED
     const retrieveFile = (e)=>{
@@ -87,6 +90,7 @@ const Create = ()=>{
         if (file) {
             uploadData(file, imageText, caption);
             setFile(null);
+            navigate('/inscrible')
         }
         else{
             setFilename("No image selected");

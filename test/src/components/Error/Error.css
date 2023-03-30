@@ -1,78 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-.main-alert-box{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: azure;
-    width:25%;
-    height: 35%;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    padding: 5px;
-}
-
-.icon-of-success{
-    width: 70px;
-    height: 70px;
-    line-height: 70px;
-    background: #990000;
-    border-radius: 50%;
-    border: 4px solid white;
-    color: white;
-    font-size: 45px;
-    font-family: verdana;
+.Error{
+    position: fixed;
+    inset: 30% 30% 45% 30%;
+    z-index: 1111111111;
+    margin:  0 auto;
+    background-color: #292F3F;
     text-align: center;
-
-}
-
-.alert-title{
-    font-family: 'Roboto', sans-serif;
-    margin-bottom: 20px;
-}
-
-.alert-message{
-    font-family: 'Roboto', sans-serif;
-    color: rgb(196, 185, 185);
-}
-
-.ok-btn{
-    width: 20%;
-    height: 15%;
+    border-radius: 1rem;
+    padding: 2rem;
+    border-radius: 50px;
+    background: white;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.ok-btn:active{
-    transform: scale(0.98);
-}
-
-@media screen and (max-width: 790px ) {
-    .main-alert-box{
-        width : 500px;
-    }
-}
-
-@media screen and (max-width: 533px ) {
-    .main-alert-box{
-        width : 300px;
-    }
-}
-
-@media screen and (max-width: 346px ) {
-    .main-alert-box{
-        width : 250px;
-    }
-}
-
-@media screen and (max-height: 661px ) {
-    .main-alert-box{
-        height : 400px;
-    }
-    .ok-btn{
-        width: 30%;
+@media only screen and (max-width: 35em) {
+    .Error{
+        inset: 10% 10% 55% 10%;
     }
 }

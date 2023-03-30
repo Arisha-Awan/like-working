@@ -7,5 +7,6 @@ import Sidebar from './Sidebar/Sidebar';
 import Post from './Post/Post';
 import Registration from './Registration/Registration';
 import Error from './Error/Error';
+import Model from './Model/Model';
 
-export {Create, Home, Loader, Login, Navbar, Sidebar, Post, Registration, Error};
+export {Create, Home, Loader, Login, Navbar, Sidebar, Post, Registration, Error, Model};
