@@ -28,19 +28,19 @@ export const InscribleProvider = ({ children }) => {
       setisLoading(true);
 
       //GET CONTRACT
-      const contract = await ConnectWithContract(); console.log("contract : ", contract);
+      const contract = await ConnectWithContract();
 
       //GET ACCOUNT
       const connectAccount = await ConnectWallet();
-      setAccount(connectAccount); console.log("Account : ", connectAccount);
+      setAccount(connectAccount);
 
       //GETTING CURRENTLY LOGGED USERNAME
       const userName = await contract.getUserName(connectAccount);
-      setUserName(userName);console.log(userName)
+      setUserName(userName);
 
       //GETTING ALL REGISTERED USERS
       const userList = await contract.getAllAppUser(); console.log(userList)
-      setUserLists(userList); console.log("userlist")
+      setUserLists(userList);
 
       //GETTING POST DATA
       const data = await contract.getAllPosts(); console.log("data" , data)

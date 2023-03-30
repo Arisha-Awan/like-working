@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+.main-user-card{
+    background: transparent;
+    color: black;
+    font-family: 'Roboto', sans-serif;
+    padding: 1rem;
+    border-bottom: 1px solid black;
+}
+
+.user-name{
+    font-weight: 700;
+    font-size: larger;
+}
+
+.add{
+    color: gray;
+}
+
+.user-link{
+    text-decoration: none;
+}

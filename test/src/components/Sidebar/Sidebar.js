@@ -20,9 +20,11 @@ const Sidebar = ()=>{
             <div className="item-container">
                 <span className="item"><i class="bi bi-person-video2"></i>Reels</span>
             </div>
-            <div className="item-container">
-                <span className="item"><i class="bi bi-send-fill"></i>Messages</span>
-            </div>
+            <Link to='/Message' className="item-link">
+                <div className="item-container">
+                    <span className="item"><i class="bi bi-send-fill"></i>Messages</span>
+                </div>
+            </Link>
             <div className="item-container">
                 <span className="item"><i class="bi bi-bell-fill"></i>Notifications</span>
             </div>
