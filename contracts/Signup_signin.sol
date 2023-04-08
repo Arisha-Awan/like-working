@@ -16,25 +16,27 @@ contract Signup_signin {
     }
     
     //POST COUNT
-    uint public imageCount=0;
+    uint public postCount=0;
 
     //CONTAINING ALL THE POSTS UPLOADED BY USERS
     struct Post{
-        string name;
-        address user;
+         string name;
+        address payable user;
         string imageHash;
         string description;
         string imageText;
+        uint tipAmount;
+        uint id;
     }
 
     //STRUCT CONTAINING ALL POSTS
-    struct AllPost{
-        string name;
-        address user;
-        string imageHash;
-        string description;
-        string imageText;
-    }
+    // struct AllPost{
+    //     string name;
+    //     address user;
+    //     string imageHash;
+    //     string description;
+    //     string imageText;
+    // }
 
     //STRUCT TO STORE MESSAGES
     struct Message{
@@ -46,9 +48,12 @@ contract Signup_signin {
     mapping(address=>User) userList;
     AllUsers [] allusers;
     mapping(address=>Post[]) Images_List;
-    AllPost [] allposts;
+    Post [] allposts;
     // address [] userAddresses;
     mapping(bytes32=>Message[]) allMessages;
+
+     //mapping for a distinct post
+    mapping(uint=>Post) onePost;
 
     //CHECK IS A USER HAS AN ACCOUNT
     function checkUser(address key) public view returns(bool){
@@ -63,6 +68,31 @@ contract Signup_signin {
         userList[msg.sender].name = name;
         allusers.push(AllUsers(name, msg.sender));
     }
+
+  //set the tipAmount for sepecific post
+   function incrementTipAmount(uint  post_id,uint amount) external returns(Post memory )
+   { 
+     require(post_id > 0 && post_id <= postCount);
+     Post storage tippedPost=onePost[post_id];
+     tippedPost.tipAmount=tippedPost.tipAmount+0x01;
+     tippedPost.tipAmount=2;
+     tippedPost.id=5;
+     
+      
+     onePost[post_id]=tippedPost;
+    //  onePost[post_id].tipAmount=onePost[post_id].tipAmount+amount;
+     return onePost[post_id];   
+   }
+      
+    
+
+
+
+
+
+
+
+
 
     //GET CURRENTLY LOGGED IN USER'S NAME
     function getUserName(address key) external view returns(string memory){
@@ -104,25 +134,34 @@ contract Signup_signin {
     {   
         require(checkUser(msg.sender), "User not registered!");
         require(bytes(_imgHash).length > 0);
+         postCount++;
         Post memory newPost = Post({
             name: userList[msg.sender].name,
-            user: msg.sender,
+            user: payable(msg.sender),
             imageHash: _imgHash,
             description: desc,
-            imageText: imgText
+            imageText: imgText,
+            tipAmount:0,
+            id:postCount
         });
 
-        AllPost memory post = AllPost({
-            name: userList[msg.sender].name,
-            user: msg.sender,
-            imageHash: _imgHash,
-            description: desc,
-            imageText: imgText
-        });
+        // AllPost memory post = AllPost({
+        //     name: userList[msg.sender].name,
+        //     user: msg.sender,
+        //     imageHash: _imgHash,
+        //     description: desc,
+        //     imageText: imgText
+        // });
 
         Images_List[msg.sender].push(newPost);
-        allposts.push(post);
-        imageCount++;
+        allposts.push(newPost);
+        
+        onePost[postCount]=newPost;
+        
+
+        
+        
+     
         // bool isOldAddress = isAddressPresent(userAddresses, msg.sender);
         // if(isOldAddress == false){
         //     userAddresses.push(msg.sender);
@@ -139,7 +178,7 @@ contract Signup_signin {
     }
 
     //RETURNS ALL POSTS UPLOADED TILL NOW
-    function getAllPosts() external view returns (AllPost[] memory) {
+    function getAllPosts() external view returns (Post[] memory) {
         // Post[] memory allPosts = new Post[](imageCount);
         // uint currentIndex = 0;
         // for (uint i = 0; i < userAddresses.length; i++) {

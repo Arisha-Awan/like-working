@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ConnectWithContract, ConnectWallet, MapDataToFrontend } from '../Utils/API';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  ConnectWithContract,
+  ConnectWallet,
+  MapDataToFrontend,
+} from "../Utils/API";
 
 //CREATING CONTEXT
 export const InscribleContext = React.createContext();
 
-
 //CREATING CONTEXT PROVIDER
 export const InscribleProvider = ({ children }) => {
-
   const [appData, setAppData] = useState([]);
   const [account, setAccount] = useState("");
   const [userList, setUserLists] = useState([]);
@@ -39,13 +41,16 @@ export const InscribleProvider = ({ children }) => {
       setUserName(userName);
 
       //GETTING ALL REGISTERED USERS
-      const userList = await contract.getAllAppUser(); console.log(userList)
+      const userList = await contract.getAllAppUser();
+      console.log(userList);
       setUserLists(userList);
 
       //GETTING POST DATA
-      const data = await contract.getAllPosts(); console.log("data" , data)
+      const data = await contract.getAllPosts();
+      console.log("calllingggggggggggggggg");
+      console.log("data", data);
       setAppData(MapDataToFrontend(data));
-      
+
       setisLoading(false);
     } catch (error) {
       setErrorTitle("NO Metamask Account FOUND");
@@ -55,7 +60,7 @@ export const InscribleProvider = ({ children }) => {
   };
 
   //FUNCTION TO UPLOAD NEW DATA TO BLOCKCHAIN
-  const uploadData = async(file, imageText, caption) => {
+  const uploadData = async (file, imageText, caption) => {
     try {
       setisLoading(true);
 
@@ -79,13 +84,19 @@ export const InscribleProvider = ({ children }) => {
       const ImgHash = `ipfs://${resFile.data.IpfsHash}`;
 
       //ADDING DATA TO BLOCKCHAIN
-      const add = await contract.addPostImage(ImgHash, caption.descriptionBox, imageText.textOnImage);
+      const add = await contract.addPostImage(
+        ImgHash,
+        caption.descriptionBox,
+        imageText.textOnImage
+      );
       await add.wait();
       setisLoading(false);
     } catch (e) {
       alert("Couldn't upload image!");
       setErrorTitle("FAILED TRANSACTION");
-      setError("Couldn't Perform Transaction. Please Check Your internet and Try Again!");
+      setError(
+        "Couldn't Perform Transaction. Please Check Your internet and Try Again!"
+      );
       setisLoading(false);
     }
   };
@@ -118,13 +129,17 @@ export const InscribleProvider = ({ children }) => {
   //CREATE ACCOUNT
   const createAccount = async (name) => {
     try {
-      console.log("inside ca")
-      const contract = await ConnectWithContract(); console.log(contract)
-      const getCreatedUser = await contract.createAccount(name);console.log("calling")
+      console.log("inside ca");
+      const contract = await ConnectWithContract();
+      console.log(contract);
+      const getCreatedUser = await contract.createAccount(name);
+      console.log("calling");
       setisLoading(true);
-      await getCreatedUser.wait(); console.log("called")
+      await getCreatedUser.wait();
+      console.log("called");
       setisLoading(false);
-      window.location.reload(); console.log("donne")
+      window.location.reload();
+      console.log("donne");
     } catch (error) {
       setError("Error while creating your account Pleas reload browser");
     }
@@ -167,7 +182,7 @@ export const InscribleProvider = ({ children }) => {
   //       console.log("Checking Contract address : ", contract);
   //       setContract(contract);
   //       setProvider(prov);
-  //     } 
+  //     }
   //     else {
   //       setErrorTitle("Fatal Error");
   //       setErrorMessage("Metamask Extension is not installed!!");
@@ -177,29 +192,31 @@ export const InscribleProvider = ({ children }) => {
 
   useEffect(() => {
     fetchData();
-  }, [])
+  }, []);
 
   return (
-    <InscribleContext.Provider value={{
-      isLoading,
-      appData,
-      account,
-      userList,
-      errorTitle,
-      errorMessage,
-      friendMsg,
-      error,
-      userName,
-      currentUserAddress,
-      currentUserName,
-      uploadData,
-      createAccount,
-      readMessage,
-      sendMessage,
-      readUser,
-      // fetchPostss
-    }}>
+    <InscribleContext.Provider
+      value={{
+        isLoading,
+        appData,
+        account,
+        userList,
+        errorTitle,
+        errorMessage,
+        friendMsg,
+        error,
+        userName,
+        currentUserAddress,
+        currentUserName,
+        uploadData,
+        createAccount,
+        readMessage,
+        sendMessage,
+        readUser,
+        // fetchPostss
+      }}
+    >
       {children}
     </InscribleContext.Provider>
   );
-}
+};
