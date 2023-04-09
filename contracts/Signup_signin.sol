@@ -16,17 +16,18 @@ contract Signup_signin {
     }
     
     //POST COUNT
-    uint public postCount=0;
+    uint postCount=0;
 
     //CONTAINING ALL THE POSTS UPLOADED BY USERS
     struct Post{
-         string name;
+        string name;
         address payable user;
         string imageHash;
         string description;
         string imageText;
-        uint tipAmount;
-        uint id;
+        uint256  tipAmount;
+        uint256 id;
+        uint likeCount;
     }
 
     //STRUCT CONTAINING ALL POSTS
@@ -53,12 +54,14 @@ contract Signup_signin {
     mapping(bytes32=>Message[]) allMessages;
 
      //mapping for a distinct post
-    mapping(uint=>Post) onePost;
+     mapping(uint=>Post)  onePost;
 
     //CHECK IS A USER HAS AN ACCOUNT
     function checkUser(address key) public view returns(bool){
         return bytes(userList[key].name).length > 0;
     }
+
+    
 
     //CREATE ACCOUNT
     function createAccount(string calldata name) external {
@@ -69,31 +72,16 @@ contract Signup_signin {
         allusers.push(AllUsers(name, msg.sender));
     }
 
-  //set the tipAmount for sepecific post
-   function incrementTipAmount(uint  post_id,uint amount) external returns(Post memory )
+  //increment like Count
+   function incrementLike(uint  post_id) external 
    { 
      require(post_id > 0 && post_id <= postCount);
-     Post storage tippedPost=onePost[post_id];
-     tippedPost.tipAmount=tippedPost.tipAmount+0x01;
-     tippedPost.tipAmount=2;
-     tippedPost.id=5;
-     
-      
-     onePost[post_id]=tippedPost;
-    //  onePost[post_id].tipAmount=onePost[post_id].tipAmount+amount;
-     return onePost[post_id];   
+     require(allposts[post_id-1].user != msg.sender, "Cannot tip your own post");
+        // Increment the like post
+        allposts[post_id-1].likeCount++;
+         
    }
       
-    
-
-
-
-
-
-
-
-
-
     //GET CURRENTLY LOGGED IN USER'S NAME
     function getUserName(address key) external view returns(string memory){
         require(checkUser(key), "User not registered!");
@@ -112,7 +100,6 @@ contract Signup_signin {
     function sendMessage(address friend_key, string calldata _msg) external{
         require(checkUser(msg.sender), "Create an account first");
         require(checkUser(friend_key), "User is not registered");
-
         bytes32 chatCode = _getChatCode(msg.sender, friend_key);
         Message memory newMsg = Message(msg.sender, block.timestamp, _msg);
         allMessages[chatCode].push(newMsg);
@@ -142,7 +129,8 @@ contract Signup_signin {
             description: desc,
             imageText: imgText,
             tipAmount:0,
-            id:postCount
+            id:postCount,
+            likeCount:0
         });
 
         // AllPost memory post = AllPost({
@@ -168,6 +156,32 @@ contract Signup_signin {
         // }
     }
 
+
+
+    ///like the post and send the tip
+   
+
+   function tipPostOwner(uint256 _id) external payable {
+        // Make sure the id is valid
+        require(_id > 0 && _id <= postCount, "Invalid post id");
+        require(allposts[_id-1].user != msg.sender, "Cannot tip your own post");
+        // Fetch the post
+        
+        address payable user=allposts[_id-1].user;
+        
+        // Pay the author by sending them Ether
+        user.transfer(msg.value);
+        // Increment the tip amount
+        allposts[_id-1].tipAmount += msg.value;
+        
+    }
+
+
+
+   
+
+  
+
     function isAddressPresent(address[] memory userAddress, address addressToCheck) public pure returns (bool) {
         for (uint i = 0; i < userAddress.length; i++) {
             if (userAddress[i] == addressToCheck) {
@@ -176,7 +190,6 @@ contract Signup_signin {
         }
         return false;
     }
-
     //RETURNS ALL POSTS UPLOADED TILL NOW
     function getAllPosts() external view returns (Post[] memory) {
         // Post[] memory allPosts = new Post[](imageCount);

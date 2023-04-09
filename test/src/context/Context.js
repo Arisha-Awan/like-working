@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import axios from "axios";
 import {
   ConnectWithContract,
@@ -11,6 +12,8 @@ export const InscribleContext = React.createContext();
 
 //CREATING CONTEXT PROVIDER
 export const InscribleProvider = ({ children }) => {
+  //likeeee
+
   const [appData, setAppData] = useState([]);
   const [account, setAccount] = useState("");
   const [userList, setUserLists] = useState([]);
@@ -28,6 +31,7 @@ export const InscribleProvider = ({ children }) => {
   const fetchData = async () => {
     try {
       setisLoading(true);
+      console.log("helllo arisha hello arisha");
 
       //GET CONTRACT
       const contract = await ConnectWithContract();
@@ -42,14 +46,20 @@ export const InscribleProvider = ({ children }) => {
 
       //GETTING ALL REGISTERED USERS
       const userList = await contract.getAllAppUser();
-      console.log(userList);
+      // console.log(userList);
       setUserLists(userList);
 
       //GETTING POST DATA
       const data = await contract.getAllPosts();
       console.log("calllingggggggggggggggg");
       console.log("data", data);
+      console.log("calling useState beforrrrre setAppdata");
+      console.log(appData);
+
       setAppData(MapDataToFrontend(data));
+
+      console.log("calling useState after setAppdata");
+      console.log(appData);
 
       setisLoading(false);
     } catch (error) {
@@ -190,6 +200,104 @@ export const InscribleProvider = ({ children }) => {
   //     setIsContract(true);
   // };
 
+  /////like post front end
+  const tip = async (post_id) => {
+    // tip post owner
+    const contract = await ConnectWithContract();
+    await (
+      await contract.tipPostOwner(post_id, {
+        value: ethers.utils.parseEther("0.00001"),
+      })
+    ).wait();
+    // console.log("this is callled in tip ");
+    // console.log(appData[0]);
+    fetchData();
+
+    // loadPosts();
+  };
+
+  const like = async (post_id) => {
+    // tip post owner
+    const contract = await ConnectWithContract();
+
+    await (await contract.incrementLike(post_id)).wait();
+    fetchData();
+
+    // loadPosts();
+  };
+
+  const MapDataToFrontend = (data) => {
+    const images = data.map((item, i) => {
+      return (
+        <div className="single-post-container">
+          <span className="account-name">{item[0]}</span>
+          <br></br>
+          <span className="account-address">{item[1]}</span>
+          <div className="image-container">
+            <img
+              key={i}
+              src={`https://gateway.pinata.cloud/ipfs/${item[2].substring(6)}`}
+              alt="new"
+              className="image-list"
+            ></img>
+            <div className="img-text-container">
+              <span className="img-text" id="img-text">
+                {item[4]}
+              </span>
+            </div>
+          </div>
+          <div className="description">
+            <span className="discription-text">{item[3]}</span>
+          </div>
+          <hr />
+          {/* coding for like */}
+          <div className="d-inline mt-auto float-start">
+            Total Tip:
+            {
+              //converting hexdecimal in to ethers
+              parseInt(item[5]._hex, 16) / 10 ** 18
+              // // convert to decimal
+              // let decimalValue = parseInt(hexValue, 16);
+              //  // convert to Wei
+              // let weiValue = decimalValue * (10 ** 18);
+              //  // convert to Wei
+              // let etherValue = weiValue / (10 ** 18);
+            }
+          </div>
+          <div className="d-inline float-end">
+            <button
+              className="btn btn-link btn-sm float-right pt-0"
+              onClick={() => {
+                // tip(item[6]._hex);
+                // let id_todecimal = parseInt(item[6]._hex, 16);
+                // tip(id_todecimal);
+
+                //toNumber function convert the big number into integer
+                tip(item[6].toNumber());
+                // tip(item[5]._hex);
+              }}
+            >
+              TIP 0.1 ETH
+            </button>
+
+            <button
+              className="btn btn-link btn-sm float-right pt-0"
+              onClick={() => {
+                like(item[6].toNumber());
+                // tip(item[5]._hex);
+              }}
+            >
+              {item[7].toNumber()}
+              Like
+              <span class="material-symbols-outlined">favorite</span>
+            </button>
+          </div>
+        </div>
+      );
+    });
+    return images;
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -208,6 +316,7 @@ export const InscribleProvider = ({ children }) => {
         userName,
         currentUserAddress,
         currentUserName,
+        fetchData,
         uploadData,
         createAccount,
         readMessage,
