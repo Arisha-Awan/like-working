@@ -50,13 +50,23 @@ export const InscribleProvider = ({ children }) => {
       setUserLists(userList);
 
       //GETTING POST DATA
-      const data = await contract.getAllPosts();
+      let data = await contract.getAllPosts();
       console.log("calllingggggggggggggggg");
       console.log("data", data);
-      console.log("calling useState beforrrrre setAppdata");
-      console.log(appData);
+      console.log("first element of data array", parseInt(data[0][7]._hex, 16));
 
-      setAppData(MapDataToFrontend(data));
+      // sorting posts in desecending order
+      // data.sort((a, b) => b.name.localeCompare(a.name));
+      let dataCopy = [...data];
+
+      // sorting posts in descending order
+      dataCopy.sort((a, b) => {
+        let val1 = b.likeCount.toNumber();
+        let val2 = a.likeCount.toNumber();
+        return val1 - val2;
+      });
+
+      setAppData(MapDataToFrontend(dataCopy));
 
       console.log("calling useState after setAppdata");
       console.log(appData);
@@ -217,17 +227,17 @@ export const InscribleProvider = ({ children }) => {
   };
 
   const like = async (post_id) => {
-    // tip post owner
     const contract = await ConnectWithContract();
 
     await (await contract.incrementLike(post_id)).wait();
+
     fetchData();
 
     // loadPosts();
   };
 
   const MapDataToFrontend = (data) => {
-    const images = data.map((item, i) => {
+    let images = data.map((item, i) => {
       return (
         <div className="single-post-container">
           <span className="account-name">{item[0]}</span>
@@ -279,7 +289,6 @@ export const InscribleProvider = ({ children }) => {
             >
               TIP 0.1 ETH
             </button>
-
             <button
               className="btn btn-link btn-sm float-right pt-0"
               onClick={() => {
@@ -295,6 +304,7 @@ export const InscribleProvider = ({ children }) => {
         </div>
       );
     });
+
     return images;
   };
 

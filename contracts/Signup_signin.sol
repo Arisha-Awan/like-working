@@ -28,6 +28,7 @@ contract Signup_signin {
         uint256  tipAmount;
         uint256 id;
         uint likeCount;
+        string [] likedByUser;
     }
 
     //STRUCT CONTAINING ALL POSTS
@@ -72,15 +73,7 @@ contract Signup_signin {
         allusers.push(AllUsers(name, msg.sender));
     }
 
-  //increment like Count
-   function incrementLike(uint  post_id) external 
-   { 
-     require(post_id > 0 && post_id <= postCount);
-     require(allposts[post_id-1].user != msg.sender, "Cannot tip your own post");
-        // Increment the like post
-        allposts[post_id-1].likeCount++;
-         
-   }
+
       
     //GET CURRENTLY LOGGED IN USER'S NAME
     function getUserName(address key) external view returns(string memory){
@@ -130,7 +123,8 @@ contract Signup_signin {
             imageText: imgText,
             tipAmount:0,
             id:postCount,
-            likeCount:0
+            likeCount:0,
+            likedByUser : new string[](0)         
         });
 
         // AllPost memory post = AllPost({
@@ -176,11 +170,27 @@ contract Signup_signin {
         
     }
 
+    function checkIfLikedByExists(string[] memory likedBy, string memory username) public pure returns (bool) 
+    {
+        for (uint i = 0; i < likedBy.length; i++) {
+           if (keccak256(bytes(likedBy[i])) == keccak256(bytes(username))) {
+               return true;
+            }
+        }
+        return false;
+    }
+    //increment like Count
+   function incrementLike(uint  post_id) external 
+   { 
+     require(post_id > 0 && post_id <= postCount);
+     require(allposts[post_id-1].user != msg.sender, "Cannot tip your own post");
+     require(!checkIfLikedByExists(allposts[post_id-1].likedByUser,userList[msg.sender].name),"Cannot tip your own post");
+        // Increment the like post
+        allposts[post_id-1].likeCount++;
+        // allposts[post_id-1].likedByUser[allposts[post_id-1].likeCount]=userList[msg.sender].name;
+        allposts[post_id-1].likedByUser.push(userList[msg.sender].name);
+   }
 
-
-   
-
-  
 
     function isAddressPresent(address[] memory userAddress, address addressToCheck) public pure returns (bool) {
         for (uint i = 0; i < userAddress.length; i++) {
